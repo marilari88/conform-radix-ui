@@ -1,6 +1,6 @@
 import { FieldConfig, conform, useInputEvent } from "@conform-to/react";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import { useRef } from "react";
+import { ElementRef, useRef } from "react";
 
 export function ToggleGroupConform({
   config,
@@ -10,15 +10,22 @@ export function ToggleGroupConform({
   items: Array<{ label: string; value: string }>;
 }) {
   const shadowInputRef = useRef<HTMLInputElement>(null);
+  const toggleGroupRef = useRef<ElementRef<typeof ToggleGroup.Root>>(null);
   const control = useInputEvent({ ref: shadowInputRef });
   return (
     <>
       <input
         ref={shadowInputRef}
-        {...conform.input(config, { hidden: true })}
+        {...conform.input(config, {
+          hidden: true,
+        })}
+        onFocus={() => {
+          toggleGroupRef.current?.focus();
+        }}
       />
       <ToggleGroup.Root
         type="single"
+        ref={toggleGroupRef}
         defaultValue={config.defaultValue}
         className={
           "flex flex-row items-center p-1 gap-0 bg-neutral-200 rounded-md max-w-md"
@@ -26,7 +33,6 @@ export function ToggleGroupConform({
         onValueChange={(value) => {
           control.change(value);
         }}
-        onFocus={() => control.focus()}
         onBlur={() => control.blur()}
       >
         {items.map((item) => (

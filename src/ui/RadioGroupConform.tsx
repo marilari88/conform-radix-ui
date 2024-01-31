@@ -1,7 +1,7 @@
 import { conform, useInputEvent, type FieldConfig } from "@conform-to/react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import clsx from "clsx";
-import { useRef } from "react";
+import { ElementRef, useRef } from "react";
 
 export function RadioGroupConform({
   config,
@@ -11,19 +11,23 @@ export function RadioGroupConform({
   items: Array<{ value: string; label: string }>;
 }) {
   const shadowInputRef = useRef<HTMLInputElement>(null);
+  const radioGroupRef = useRef<ElementRef<typeof RadioGroup.Root>>(null);
   const control = useInputEvent({ ref: shadowInputRef });
   return (
     <>
       <input
         ref={shadowInputRef}
         {...conform.input(config, { hidden: true })}
+        onFocus={() => {
+          radioGroupRef.current?.focus();
+        }}
       />
       <RadioGroup.Root
+        ref={radioGroupRef}
         className="flex items-center gap-4"
         onValueChange={(value) => {
           control.change(value);
         }}
-        onFocus={() => control.focus()}
         onBlur={() => control.blur()}
         defaultValue={config.defaultValue}
       >

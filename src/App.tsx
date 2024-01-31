@@ -1,11 +1,11 @@
 import { useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
 import { z } from "zod";
-import { RadioGroupConform } from "./ui/RadioGroupConform";
 import { CheckboxConform } from "./ui/CheckboxConform";
+import { RadioGroupConform } from "./ui/RadioGroupConform";
 import { SliderConform } from "./ui/SliderConform";
-import { ToggleGroupConform } from "./ui/ToggleGroup";
-import { SwitchConform } from "./ui/Switch";
+import { SwitchConform } from "./ui/SwitchConform";
+import { ToggleGroupConform } from "./ui/ToggleGroupConform";
 
 const schema = z.object({
   hasAgreedToTerms: z.string({
@@ -101,8 +101,12 @@ export function App() {
         </div>
         <div className="flex flex-col gap-2">
           <h2 className="font-medium text-amber-600">Switch</h2>
-          <SwitchConform config={hasAdditionalDriver} />
-          <label htmlFor={hasAdditionalDriver.id}>Has additional driver</label>
+          <div className="flex items-center gap-2">
+            <SwitchConform config={hasAdditionalDriver} />
+            <label htmlFor={hasAdditionalDriver.id}>
+              Has additional driver
+            </label>
+          </div>
           {hasAdditionalDriver.error && (
             <span className="text-red-800">{hasAdditionalDriver.error}</span>
           )}
