@@ -5,18 +5,18 @@ import { RadioGroupConform } from "./ui/RadioGroupConform";
 import { CheckboxConform } from "./ui/CheckboxConform";
 import { SliderConform } from "./ui/SliderConform";
 import { ToggleGroupConform } from "./ui/ToggleGroup";
+import { SwitchConform } from "./ui/Switch";
 
 const schema = z.object({
-  hasAgreedToTerms: z
-    .boolean()
-    .optional()
-    .refine((val) => val, {
-      message: "You must agree to the terms and conditions.",
-    }),
+  hasAgreedToTerms: z.string({
+    required_error: "You must agree to the terms and conditions.",
+  }),
   selectedCarType: z.enum(["sedan", "hatchback", "suv"]),
   userCountry: z.enum(["usa", "canada", "mexico"]),
   estimatedKilometersPerYear: z.number().min(1).max(100000),
-  hasAdditionalDriver: z.boolean(),
+  hasAdditionalDriver: z.undefined({
+    invalid_type_error: "You cannot have an additional driver",
+  }),
   desiredContractType: z.enum(["full", "part"]),
 });
 
@@ -34,22 +34,24 @@ export function App() {
   ] = useForm({
     id: "car-rent",
     onValidate({ formData }) {
-      return parse(formData, { schema });
+      const newLocal = parse(formData, { schema });
+      console.log({ newLocal });
+      return newLocal;
     },
     defaultValue: {
       selectedCarType: "sedan",
       desiredContractType: "full",
     },
-    shouldValidate: "onInput",
+    shouldRevalidate: "onInput",
   });
 
   return (
     <main className="flex flex-col gap-4 p-12 font-sans">
-      <h1 className="font-bold text-3xl">Radix UI + Conform</h1>
       <form
         {...form.props}
-        className="bg-neutral-100 flex flex-col gap-12 p-4 rounded-md"
+        className="bg-neutral-100 flex flex-col gap-12 p-12 rounded-md mx-auto"
       >
+        <h1 className="font-bold text-3xl">Radix UI + Conform</h1>
         <div className="flex flex-col gap-2">
           <h2 className="font-medium text-amber-600">Checkbox</h2>
           <div className="flex items-center gap-2">
@@ -97,7 +99,14 @@ export function App() {
             )}
           </div>
         </div>
-        <h2 className="font-medium text-amber-600">Switch</h2>
+        <div className="flex flex-col gap-2">
+          <h2 className="font-medium text-amber-600">Switch</h2>
+          <SwitchConform config={hasAdditionalDriver} />
+          <label htmlFor={hasAdditionalDriver.id}>Has additional driver</label>
+          {hasAdditionalDriver.error && (
+            <span className="text-red-800">{hasAdditionalDriver.error}</span>
+          )}
+        </div>
         <div className="flex flex-col gap-2">
           <h2 className="font-medium text-amber-600">Toggle group</h2>
           <div className="flex flex-col gap-2">
