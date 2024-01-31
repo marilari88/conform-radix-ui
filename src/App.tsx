@@ -1,9 +1,9 @@
-import { useInputEvent, type FieldConfig, useForm } from "@conform-to/react";
+import { useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
-import * as Checkbox from "@radix-ui/react-checkbox";
-import { CheckIcon } from "@radix-ui/react-icons";
-import { ElementRef, useRef } from "react";
 import { z } from "zod";
+import { RadioGroupConform } from "./ui/RadioGroupConform";
+import { CheckboxConform } from "./ui/CheckboxConform";
+import { SliderConform } from "./ui/SliderConform";
 
 const schema = z.object({
   hasAgreedToTerms: z
@@ -14,12 +14,12 @@ const schema = z.object({
     }),
   selectedCarType: z.enum(["sedan", "hatchback", "suv"]),
   userCountry: z.enum(["usa", "canada", "mexico"]),
-  estimatedKilometersPerYear: z.number().min(0).max(100000),
+  estimatedKilometersPerYear: z.number().min(1).max(100000),
   hasAdditionalDriver: z.boolean(),
   desiredContractType: z.enum(["full", "part"]),
 });
 
-function App() {
+export function App() {
   const [
     form,
     {
@@ -34,6 +34,9 @@ function App() {
     id: "car-rent",
     onValidate({ formData }) {
       return parse(formData, { schema });
+    },
+    defaultValue: {
+      selectedCarType: "sedan",
     },
   });
 
@@ -56,10 +59,41 @@ function App() {
             <span className="text-red-800">{hasAgreedToTerms.error}</span>
           )}
         </div>
-
-        <h2>Radio Group</h2>
+        <div className="flex flex-col gap-2">
+          <h2 className="font-medium">Radio Group</h2>
+          <div className="flex flex-col gap-2">
+            Car type:
+            <RadioGroupConform
+              config={selectedCarType}
+              items={[
+                { value: "sedan", label: "Sedan" },
+                { value: "hatchback", label: "Hatchback" },
+                { value: "suv", label: "SUV" },
+                { value: "other", label: "Other (not valid choice)" },
+              ]}
+            />
+            {selectedCarType.error && (
+              <span className="text-red-800">{selectedCarType.error}</span>
+            )}
+          </div>
+        </div>
         <h2>Select</h2>
-        <h2>Slider</h2>
+        <div className="flex flex-col gap-2">
+          <h2>Slider</h2>
+          <div className="flex flex-col gap-2">
+            Estimated kilometers per year:
+            <SliderConform
+              config={estimatedKilometersPerYear}
+              ariaLabel="Estimated kilometers per year"
+              max={10_000}
+            />
+            {estimatedKilometersPerYear.error && (
+              <span className="text-red-800">
+                {estimatedKilometersPerYear.error}
+              </span>
+            )}
+          </div>
+        </div>
         <h2>Switch</h2>
         <h2>Toggle group</h2>
         <button
@@ -72,31 +106,3 @@ function App() {
     </main>
   );
 }
-
-const CheckboxConform = ({ config }: { config: FieldConfig<boolean> }) => {
-  const checkboxRef = useRef<ElementRef<typeof Checkbox.Root>>(null);
-  const control = useInputEvent({
-    ref: () => checkboxRef.current?.form?.elements.namedItem(config.name),
-    onFocus: () => {
-      checkboxRef.current?.focus();
-    },
-  });
-  return (
-    <Checkbox.Root
-      ref={checkboxRef}
-      id={config.id}
-      name={config.name}
-      onCheckedChange={(e) => {
-        control.change(e);
-      }}
-      onBlur={control.blur}
-      className="hover:bg-amber-100 flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-md bg-white outline-none border"
-    >
-      <Checkbox.Indicator className="text-violet-900">
-        <CheckIcon />
-      </Checkbox.Indicator>
-    </Checkbox.Root>
-  );
-};
-
-export default App;
