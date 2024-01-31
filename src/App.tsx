@@ -4,6 +4,7 @@ import { z } from "zod";
 import { RadioGroupConform } from "./ui/RadioGroupConform";
 import { CheckboxConform } from "./ui/CheckboxConform";
 import { SliderConform } from "./ui/SliderConform";
+import { ToggleGroupConform } from "./ui/ToggleGroup";
 
 const schema = z.object({
   hasAgreedToTerms: z
@@ -37,7 +38,9 @@ export function App() {
     },
     defaultValue: {
       selectedCarType: "sedan",
+      desiredContractType: "full",
     },
+    shouldValidate: "onInput",
   });
 
   return (
@@ -45,10 +48,10 @@ export function App() {
       <h1 className="font-bold text-3xl">Radix UI + Conform</h1>
       <form
         {...form.props}
-        className="bg-neutral-100 flex flex-col gap-4 p-4 rounded-md"
+        className="bg-neutral-100 flex flex-col gap-12 p-4 rounded-md"
       >
         <div className="flex flex-col gap-2">
-          <h2 className="font-medium">Checkbox</h2>
+          <h2 className="font-medium text-amber-600">Checkbox</h2>
           <div className="flex items-center gap-2">
             <CheckboxConform config={hasAgreedToTerms} />
             <label htmlFor={hasAgreedToTerms.id}>
@@ -60,7 +63,7 @@ export function App() {
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <h2 className="font-medium">Radio Group</h2>
+          <h2 className="font-medium text-amber-600">Radio Group</h2>
           <div className="flex flex-col gap-2">
             Car type:
             <RadioGroupConform
@@ -77,9 +80,9 @@ export function App() {
             )}
           </div>
         </div>
-        <h2>Select</h2>
+        <h2 className="text-medium text-amber-600">Select</h2>
         <div className="flex flex-col gap-2">
-          <h2>Slider</h2>
+          <h2 className="font-medium text-amber-600">Slider</h2>
           <div className="flex flex-col gap-2">
             Estimated kilometers per year:
             <SliderConform
@@ -94,8 +97,24 @@ export function App() {
             )}
           </div>
         </div>
-        <h2>Switch</h2>
-        <h2>Toggle group</h2>
+        <h2 className="font-medium text-amber-600">Switch</h2>
+        <div className="flex flex-col gap-2">
+          <h2 className="font-medium text-amber-600">Toggle group</h2>
+          <div className="flex flex-col gap-2">
+            Desired contract type:
+            <ToggleGroupConform
+              config={desiredContractType}
+              items={[
+                { value: "full", label: "Full" },
+                { value: "part", label: "Part time" },
+                { value: "not valid", label: "not Valid" },
+              ]}
+            />
+            {desiredContractType.error && (
+              <span className="text-red-800">{desiredContractType.error}</span>
+            )}
+          </div>
+        </div>
         <button
           type="submit"
           className="bg-amber-800 p-3 rounded-lg text-white hover:opacity-90"
