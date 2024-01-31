@@ -6,6 +6,7 @@ import { RadioGroupConform } from "./ui/RadioGroupConform";
 import { SliderConform } from "./ui/SliderConform";
 import { SwitchConform } from "./ui/SwitchConform";
 import { ToggleGroupConform } from "./ui/ToggleGroupConform";
+import { SelectConform } from "./ui/SelectConform";
 
 const schema = z.object({
   hasAgreedToTerms: z.string({
@@ -82,7 +83,22 @@ export function App() {
             )}
           </div>
         </div>
-        <h2 className="text-medium text-amber-600">Select</h2>
+        <div className="flex flex-col gap-2 items-start">
+          <h2 className="text-medium text-amber-600">Select</h2>
+          <label htmlFor={userCountry.id}>Country</label>
+          <SelectConform
+            config={userCountry}
+            placeholder="Select a country 🗺"
+            items={[
+              { name: "USA", value: "usa" },
+              { name: "Canada", value: "canada" },
+              { name: "Mexico", value: "mexico" },
+            ]}
+          />
+          {userCountry.error && (
+            <span className="text-red-800">{userCountry.error}</span>
+          )}
+        </div>
         <div className="flex flex-col gap-2">
           <h2 className="font-medium text-amber-600">Slider</h2>
           <div className="flex flex-col gap-2">
