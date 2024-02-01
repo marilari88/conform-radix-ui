@@ -24,6 +24,7 @@ export function ToggleGroupConform({
       />
       <ToggleGroup.Root
         type="single"
+        value={control.value}
         ref={toggleGroupRef}
         defaultValue={config.initialValue}
         className={

@@ -27,6 +27,7 @@ export function SliderConform({
         }}
       />
       <Slider.Root
+        value={[parseFloat(control.value ?? "0")]}
         className="relative flex items-center select-none touch-none w-full h-5"
         aria-invalid={!!config.errors}
         defaultValue={[parseFloat(defaultValue)]}

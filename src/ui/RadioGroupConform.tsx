@@ -1,8 +1,4 @@
-import {
-  FieldMetadata,
-  getInputProps,
-  useInputControl,
-} from "@conform-to/react";
+import { FieldMetadata, useInputControl } from "@conform-to/react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import clsx from "clsx";
 import { ElementRef, useRef } from "react";
@@ -28,6 +24,7 @@ export function RadioGroupConform({
         }}
       />
       <RadioGroup.Root
+        value={control.value}
         ref={radioGroupRef}
         className="flex items-center gap-4"
         onValueChange={(value) => {

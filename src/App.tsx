@@ -55,6 +55,7 @@ export function App() {
   return (
     <main className="flex flex-col gap-4 p-12 font-sans">
       <form
+        method="POST"
         {...getFormProps(form)}
         className="bg-neutral-100 flex flex-col gap-12 p-12 rounded-lg mx-auto"
       >
@@ -161,6 +162,7 @@ export function App() {
           </button>
           <button
             type="reset"
+            {...form.reset.getButtonProps()}
             className="text-amber-800 hover:opacity-90 px-3 py-2 border-neutral-300 border rounded-lg grow"
           >
             Reset

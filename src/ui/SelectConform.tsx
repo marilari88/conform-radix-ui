@@ -32,6 +32,7 @@ export const SelectConform = ({
       />
 
       <Select.Root
+        value={control.value ?? ""}
         onValueChange={control.change}
         onOpenChange={(open) => {
           if (!open) {

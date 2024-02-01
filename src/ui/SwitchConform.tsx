@@ -17,6 +17,7 @@ export function SwitchConform({ config }: { config: FieldMetadata<boolean> }) {
         }}
       />
       <Switch.Root
+        checked={config.value == "on"}
         ref={switchRef}
         id={config.id}
         onCheckedChange={(value) => {
