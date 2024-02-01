@@ -1,4 +1,8 @@
-import { conform, useInputEvent, type FieldConfig } from "@conform-to/react";
+import {
+  FieldMetadata,
+  getInputProps,
+  useInputControl,
+} from "@conform-to/react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import clsx from "clsx";
 import { ElementRef, useRef } from "react";
@@ -7,17 +11,18 @@ export function RadioGroupConform({
   config,
   items,
 }: {
-  config: FieldConfig<string>;
+  config: FieldMetadata<string>;
   items: Array<{ value: string; label: string }>;
 }) {
-  const shadowInputRef = useRef<HTMLInputElement>(null);
   const radioGroupRef = useRef<ElementRef<typeof RadioGroup.Root>>(null);
-  const control = useInputEvent({ ref: shadowInputRef });
+  const control = useInputControl(config);
   return (
     <>
       <input
-        ref={shadowInputRef}
-        {...conform.input(config, { hidden: true })}
+        name={config.name}
+        defaultValue={config.initialValue}
+        tabIndex={-1}
+        className="sr-only"
         onFocus={() => {
           radioGroupRef.current?.focus();
         }}
@@ -29,7 +34,7 @@ export function RadioGroupConform({
           control.change(value);
         }}
         onBlur={() => control.blur()}
-        defaultValue={config.defaultValue}
+        defaultValue={config.initialValue}
       >
         {items.map((item) => {
           return (
@@ -39,7 +44,7 @@ export function RadioGroupConform({
                 id={`${item.label}Id`}
                 className={clsx(
                   "size-5 rounded-full outline-none cursor-default",
-                  "border hover:bg-amber-50 focus:border-neutral-400",
+                  "border hover:bg-amber-50 focus:ring-amber-500 focus:ring-2",
                   "flex items-center justify-center",
                   "bg-white",
                 )}

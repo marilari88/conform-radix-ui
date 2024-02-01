@@ -1,5 +1,5 @@
-import { useForm } from "@conform-to/react";
-import { parse } from "@conform-to/zod";
+import { getFormProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { z } from "zod";
 import { CheckboxConform } from "./ui/CheckboxConform";
 import { RadioGroupConform } from "./ui/RadioGroupConform";
@@ -9,15 +9,21 @@ import { ToggleGroupConform } from "./ui/ToggleGroupConform";
 import { SelectConform } from "./ui/SelectConform";
 
 const schema = z.object({
-  hasAgreedToTerms: z.string({
-    required_error: "You must agree to the terms and conditions.",
-  }),
+  hasAgreedToTerms: z
+    .string()
+    .optional()
+    .refine((val) => val === "on", {
+      message: "You must agree to the terms and conditions",
+    }),
   selectedCarType: z.enum(["sedan", "hatchback", "suv"]),
   userCountry: z.enum(["usa", "canada", "mexico"]),
   estimatedKilometersPerYear: z.number().min(1).max(100000),
-  hasAdditionalDriver: z.undefined({
-    invalid_type_error: "You cannot have an additional driver",
-  }),
+  hasAdditionalDriver: z
+    .string()
+    .optional()
+    .refine((val) => val === "off", {
+      message: "You cannot have an additional driver",
+    }),
   desiredContractType: z.enum(["full", "part"]),
 });
 
@@ -35,7 +41,7 @@ export function App() {
   ] = useForm({
     id: "car-rent",
     onValidate({ formData }) {
-      const newLocal = parse(formData, { schema });
+      const newLocal = parseWithZod(formData, { schema });
       console.log({ newLocal });
       return newLocal;
     },
@@ -49,10 +55,12 @@ export function App() {
   return (
     <main className="flex flex-col gap-4 p-12 font-sans">
       <form
-        {...form.props}
-        className="bg-neutral-100 flex flex-col gap-12 p-12 rounded-md mx-auto"
+        {...getFormProps(form)}
+        className="bg-neutral-100 flex flex-col gap-12 p-12 rounded-lg mx-auto"
       >
-        <h1 className="font-bold text-3xl">Radix UI + Conform</h1>
+        <h1 className="font-bold text-4xl text-amber-800">
+          Radix UI + Conform
+        </h1>
         <div className="flex flex-col gap-2">
           <h2 className="font-medium text-amber-600">Checkbox</h2>
           <div className="flex items-center gap-2">
@@ -61,8 +69,8 @@ export function App() {
               Accept terms and conditions.
             </label>
           </div>
-          {hasAgreedToTerms.error && (
-            <span className="text-red-800">{hasAgreedToTerms.error}</span>
+          {hasAgreedToTerms.errors && (
+            <span className="text-red-800">{hasAgreedToTerms.errors}</span>
           )}
         </div>
         <div className="flex flex-col gap-2">
@@ -78,8 +86,8 @@ export function App() {
                 { value: "other", label: "Other (not valid choice)" },
               ]}
             />
-            {selectedCarType.error && (
-              <span className="text-red-800">{selectedCarType.error}</span>
+            {selectedCarType.errors && (
+              <span className="text-red-800">{selectedCarType.errors}</span>
             )}
           </div>
         </div>
@@ -95,8 +103,8 @@ export function App() {
               { name: "Mexico", value: "mexico" },
             ]}
           />
-          {userCountry.error && (
-            <span className="text-red-800">{userCountry.error}</span>
+          {userCountry.errors && (
+            <span className="text-red-800">{userCountry.errors}</span>
           )}
         </div>
         <div className="flex flex-col gap-2">
@@ -108,9 +116,9 @@ export function App() {
               ariaLabel="Estimated kilometers per year"
               max={10_000}
             />
-            {estimatedKilometersPerYear.error && (
+            {estimatedKilometersPerYear.errors && (
               <span className="text-red-800">
-                {estimatedKilometersPerYear.error}
+                {estimatedKilometersPerYear.errors}
               </span>
             )}
           </div>
@@ -123,8 +131,8 @@ export function App() {
               Has additional driver
             </label>
           </div>
-          {hasAdditionalDriver.error && (
-            <span className="text-red-800">{hasAdditionalDriver.error}</span>
+          {hasAdditionalDriver.errors && (
+            <span className="text-red-800">{hasAdditionalDriver.errors}</span>
           )}
         </div>
         <div className="flex flex-col gap-2">
@@ -139,17 +147,25 @@ export function App() {
                 { value: "not valid", label: "not Valid" },
               ]}
             />
-            {desiredContractType.error && (
-              <span className="text-red-800">{desiredContractType.error}</span>
+            {desiredContractType.errors && (
+              <span className="text-red-800">{desiredContractType.errors}</span>
             )}
           </div>
         </div>
-        <button
-          type="submit"
-          className="bg-amber-800 p-3 rounded-lg text-white hover:opacity-90"
-        >
-          Continue
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="submit"
+            className="bg-amber-800 px-3 py-2 rounded-lg text-white hover:opacity-90 grow"
+          >
+            Continue
+          </button>
+          <button
+            type="reset"
+            className="text-amber-800 hover:opacity-90 px-3 py-2 border-neutral-300 border rounded-lg grow"
+          >
+            Reset
+          </button>
+        </div>
       </form>
     </main>
   );

@@ -1,53 +1,38 @@
-import { FieldConfig, conform, useInputEvent } from "@conform-to/react";
+import { FieldMetadata, useInputControl } from "@conform-to/react";
 import * as Slider from "@radix-ui/react-slider";
-import { useRef, useState } from "react";
+import { ElementRef, useRef } from "react";
 
 export function SliderConform({
   config,
-  onChange,
-  ariaLabel,
   max = 100,
 }: {
-  config: FieldConfig<{ rate: number }>;
-  onChange?: (value: string) => void;
+  config: FieldMetadata<number>;
   ariaLabel?: string;
   max?: number;
 }) {
-  const thumbRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const sliderRef = useRef<HTMLInputElement>(null);
+  const defaultValue = config.initialValue ?? "0";
+  const thumbRef = useRef<ElementRef<typeof Slider.Thumb>>(null);
 
-  const defaultValue = config.defaultValue ?? 0;
-
-  const [value, setValue] = useState<number>(defaultValue);
-
-  const input = conform.input(config, {
-    hidden: true,
-  });
-
-  const control = useInputEvent({
-    ref: inputRef,
-    onFocus: () => {
-      thumbRef.current?.focus();
-    },
-  });
+  const control = useInputControl(config);
 
   return (
     <div className="flex items-center gap-4">
-      <input ref={inputRef} {...input} aria-label={ariaLabel} />
+      <input
+        name={config.name}
+        defaultValue={config.initialValue}
+        className="sr-only"
+        tabIndex={-1}
+        onFocus={() => {
+          thumbRef.current?.focus();
+        }}
+      />
       <Slider.Root
-        ref={sliderRef}
         className="relative flex items-center select-none touch-none w-full h-5"
-        aria-invalid={!!config.error}
-        defaultValue={[defaultValue]}
+        aria-invalid={!!config.errors}
+        defaultValue={[parseFloat(defaultValue)]}
         max={max}
         onValueChange={(value) => {
-          onChange?.(value[0].toString());
           control.change(value[0].toString());
-          setValue(value[0]);
-        }}
-        onFocus={() => {
-          control.focus();
         }}
         onBlur={() => {
           control.blur();
@@ -59,10 +44,10 @@ export function SliderConform({
         </Slider.Track>
         <Slider.Thumb
           ref={thumbRef}
-          className="block size-5 shadow-md rounded-full bg-amber-700 focus:outline-none focus:border-neutral-500 border"
+          className="block size-5 shadow-md rounded-full bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 border"
         />
       </Slider.Root>
-      <div>{value}</div>
+      <div>{control.value}</div>
     </div>
   );
 }

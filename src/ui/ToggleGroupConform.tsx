@@ -1,4 +1,4 @@
-import { FieldConfig, conform, useInputEvent } from "@conform-to/react";
+import { FieldMetadata, useInputControl } from "@conform-to/react";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { ElementRef, useRef } from "react";
 
@@ -6,19 +6,18 @@ export function ToggleGroupConform({
   config,
   items,
 }: {
-  config: FieldConfig<string>;
+  config: FieldMetadata<string>;
   items: Array<{ label: string; value: string }>;
 }) {
-  const shadowInputRef = useRef<HTMLInputElement>(null);
   const toggleGroupRef = useRef<ElementRef<typeof ToggleGroup.Root>>(null);
-  const control = useInputEvent({ ref: shadowInputRef });
+  const control = useInputControl(config);
   return (
     <>
       <input
-        ref={shadowInputRef}
-        {...conform.input(config, {
-          hidden: true,
-        })}
+        name={config.name}
+        className="sr-only"
+        tabIndex={-1}
+        defaultValue={config.initialValue}
         onFocus={() => {
           toggleGroupRef.current?.focus();
         }}
@@ -26,9 +25,9 @@ export function ToggleGroupConform({
       <ToggleGroup.Root
         type="single"
         ref={toggleGroupRef}
-        defaultValue={config.defaultValue}
+        defaultValue={config.initialValue}
         className={
-          "flex flex-row items-center p-1 gap-0 bg-neutral-200 rounded-md max-w-md"
+          "flex flex-row items-center p-1 gap-0 bg-neutral-200 rounded-lg max-w-md"
         }
         onValueChange={(value) => {
           control.change(value);
@@ -38,7 +37,7 @@ export function ToggleGroupConform({
         {items.map((item) => (
           <ToggleGroup.Item
             key={item.value}
-            className="p-1 hover:bg-amber-700/30 color-amber-100 data-[state=on]:bg-amber-800 data-[state=on]:text-white flex grow items-center justify-center bg-transparent first:rounded-l last:rounded-r focus:z-10 focus:shadow-md focus:outline-none focus:border focus:border-neutral-400"
+            className="p-1 hover:bg-amber-700/30 color-amber-100 data-[state=on]:bg-amber-800 data-[state=on]:text-white flex grow items-center justify-center bg-transparent first:rounded-l-lg last:rounded-r-lg focus:z-10 focus:ring-2 focus:outline-none  focus:ring-amber-500"
             value={item.value}
             aria-label={item.label}
           >
